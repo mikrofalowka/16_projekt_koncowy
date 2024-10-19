@@ -11,3 +11,14 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 from blog import routes, models
+
+@app.shell_context_processor
+def make_shell_context():
+  return {
+      "db": db,
+      "Entry": models.Entry
+  }
+
+from faker import Faker
+from blog.models import Entry, db
+
