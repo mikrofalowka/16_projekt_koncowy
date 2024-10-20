@@ -2,3 +2,5 @@ Flask
 flask-sqlalchemy 
 flask-migrate
 flask-shell-ipython
+flask_wtf
+faker

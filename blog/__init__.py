@@ -19,6 +19,5 @@ def make_shell_context():
       "Entry": models.Entry
   }
 
-from faker import Faker
 from blog.models import Entry, db
 
