@@ -13,12 +13,6 @@ def login_required(view_func):
            return view_func(*args, **kwargs)
        return redirect(url_for('login', next=request.path))
    return check_permissions
-            
-@app.route("/")
-def index():
-   all_posts = Entry.query.filter_by(is_published=True).order_by(Entry.pub_date.desc())
-
-   return render_template("homepage.html", all_posts=all_posts)
 
 def create_edit_entry(entry_id=None):
     errors = None
@@ -42,8 +36,13 @@ def create_edit_entry(entry_id=None):
             return redirect(url_for('index'))
         else:
             errors = form.errors
-    return render_template("entry_form.html", form=form, errors=errors)            
-    
+    return render_template("entry_form.html", form=form, errors=errors)   
+  
+@app.route("/")
+def index():
+   all_posts = Entry.query.filter_by(is_published=True).order_by(Entry.pub_date.desc())
+
+   return render_template("homepage.html", all_posts=all_posts)
 
 @app.route("/new-post/", methods=["GET", "POST"])
 @login_required
@@ -78,3 +77,17 @@ def logout():
        flash('You are now logged out.', 'success')
    return redirect(url_for('index'))
 
+@app.route("/drafts/", methods=['GET'])
+@login_required
+def list_drafts():
+   drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
+   return render_template("drafts.html", drafts=drafts)
+
+@app.route("/delete-post/<int:entry_id>/", methods=["POST"])
+@login_required
+def delete_entry(entry_id):
+    entry = Entry.query.filter_by(id=entry_id).first_or_404()
+    db.session.delete(entry)
+    db.session.commit()
+    flash("Post deleted successfully")
+    return redirect(url_for("index"))
